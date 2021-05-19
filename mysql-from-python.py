@@ -1,4 +1,5 @@
 import os
+import datetime
 import pymysql
 # Get username from Cloud9 workspace
 # (modify this variable if running on another environment)
@@ -10,11 +11,15 @@ connection = pymysql.connect(
 
 try:
     # Run a query
+    # with connection.cursor(pymysql.cursors.DictCursor) as cursor:
     with connection.cursor() as cursor:
-        sql = "select * from Artist;"
-        cursor.execute(sql)
-        result = cursor.fetchall()
-        print(result)
+        list_of_names = ['fred', 'Fred']
+        # Prepare a string with the same number of placeholders
+        # as in list_of_names
+        format_strings = ','.join(['%s']*len(list_of_names))
+        cursor.execute("DELETE FROM Friends WHERE name in ({})".
+                       format(format_strings), list_of_names)
+        connection.commit()
 finally:
-    # Close the connection, regardlessof whether the above was successful
+    # Close the connection, regardless of whether the above was successful
     connection.close()
